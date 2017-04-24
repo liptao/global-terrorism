@@ -4,7 +4,8 @@
 Analyses of terrorist groups and incidents have begun to recognize the evolutionary nature of terrorism, as well as its ability to adapt to counter-terrorism tactics. This project is intended to predict the clusters of terrorist attack using attack type, weapon type, target type, terrorist group type.    
 
 ## Use  
-TODO: Specific example of what happens in your project (e.g. what's going on under the hood)
+The product can improve the decision of the global counter terrorism operation. 
+We used several clustering algorithms, including k-means, hierarchical clustering to identify the key features of the terrorism, and also created visualization of the result.
 
 
 ## Data Used
@@ -19,11 +20,6 @@ Our data is the Global Terrorism Database compiled by the University of Maryland
 8.	Types of targets: civilian, government agencies, military bases, etc
 9.	Responsibility Claim Mode: NA, website, phone call, etc 
 
-
-## Usage
-TODO: Write usage instructions 
-Note: If you're providing a new package or software, provide examples of how to use your code (example: https://github.com/CommerceDataService/eu.us.opendata). If you're providing an analytical output, describe what goes on each file or how to run it.
-
 ## Progress Log
 * 2017-03-29 Project data downloaded
 * 2017-03-29 Project proposal submitted
@@ -35,4 +31,24 @@ Credit to Jingyu Gao, Lipei Tao, Yuan Xiang
 
 ## License
 
-TODO: Write license if you want people to use. Take a look here:  https://choosealicense.com/
+MIT License
+
+Copyright (c) [2017] [Jingyu Gao, Lipei Tao, Yuan Xiang]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
