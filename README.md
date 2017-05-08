@@ -1,7 +1,7 @@
 # Predicting Attack Type in Global Terrorist Events
 
 ## Overview/Synopsis
-Analyses of terrorist groups and incidents have begun to recognize the evolutionary nature of terrorism, as well as its ability to adapt to counter-terrorism tactics. This project is intended to predict the clusters of terrorist attack using attack type, weapon type, target type, terrorist group type.    
+Analyses of terrorist groups and incidents have begun to recognize the evolutionary nature of terrorism, as well as its ability to adapt to counter-terrorism tactics. This project is intended to predict the clusters of terrorist attack using attack type, weapon type, target type, suicide dummy, month. The analysis is performed on 4 countries that have the most frequent attacks: Iraq, Afghanistan, Pakistan, India.  
 
 ## Use  
 The product can improve the decision of the global counter terrorism operation. 
@@ -25,30 +25,10 @@ Our data is the Global Terrorism Database compiled by the University of Maryland
 * 2017-03-29 Project proposal submitted
 * 2017-04-16 Project data cleaning
 * 2017-04-16 Kmeans applied to attack type
+* 2017-05-01 Hierarchical clustering applied to input features
+* 2017-05-03 Hierarchical clustering applied to 4 countries
+* 2017-05-06 Create functions to implement HC and wrapped it into loop
+* 2017-05-07 Style Map
 
 ## Credits
-Credit to Jingyu Gao, Lipei Tao, Yuan Xiang
-
-## License
-
-MIT License
-
-Copyright (c) [2017] [Jingyu Gao, Lipei Tao, Yuan Xiang]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Credit to Lipei Tao, Yuan Xiang, Jingyu Gao
