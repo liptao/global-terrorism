@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Objective
@@ -58,7 +58,7 @@ str(tocluster.data)
 ## Hierarchical Cluster
 
 ### Write Functions to perform hierarchical clusters
-```{r comment=NA, cache=FALSE, message=FALSE}
+```{r comment=NA, cache=FALSE, message=FALSE, echo=TRUE}
 #HC Object function
 hc.object <- function(country, featurelist){
   # Args:
