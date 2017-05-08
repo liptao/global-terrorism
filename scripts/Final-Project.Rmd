@@ -2,12 +2,13 @@
 title: "Global Terrorism Prediction"
 author: "Yuan Xiang, Jingyu Gao, Lipei Tao"
 date: "5/8/2017"
-output: html_document
-
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## Objective
@@ -16,22 +17,21 @@ Analyses of terrorist groups and incidents have begun to recognize the evolution
 
 
 ## Data Used
-Our data is the Global Terrorism Database compiled by the University of Maryland. It collects information about each terrorist attack reported by governments around the world since 1970. The latest update has over 15,0000 records. Key variables of this dataset include:
+Our data is the Global Terrorism Database compiled by the University of Maryland. It collects information about each terrorist attack reported by governments around the world since 1970. The cleaned data has 20,263 records. Key variables of this dataset include:
 1.	Types of attack: bombing, kidnapping, etc
-2.	Weapon used in the attack: Handgun, Automatic Weapon, TNT, etc.
-3.	Time: year, month, date
-4.	Location: country/region, state/province, city; geographical coordinates
-5.	Identification of attackers: recognized terrorist group, individuals
-6.	Types of weapon used in the attack
-7.	Types of targets: civilian, government agencies, military bases, etc
-
+2.	Types of weapon used in the attack: Handgun, Automatic Weapon, TNT, etc.
+3.	Time: month
+4.	Countries: Afghanistan, Iraq, India, Pakistan
+5.	Suicide: use suicide attack or not
+6.	Types of targets: civilian, government agencies, military bases, etc
+7.  Geographic locations: longitude, latitude
 
 ## Data Preparation and Cleaning
 ```{r comment=NA, cache=FALSE, message=FALSE}
 # load data
 load("/Users/yuanxiang/Documents/Project/global-terrorism/data/globalterror.RData")
-project_data <- globalterror
 
+project_data <- globalterror
 new <- c("eventid","country_txt", "latitude","longitude","attacktype1", "targtype1", 
          "region", "weaptype1","imonth",
           "suicide","gname","guncertain1","doubtterr" )
@@ -100,27 +100,23 @@ draw.map <- function(country, groups){
   country.map <- map("world", region = country, interior=FALSE)
   country.map <- map("world",boundary=FALSE,col="black",add=TRUE)
   country.map <- points(eval(parse(text=country))$longitude, eval(parse(text=country))$latitude, pch = 19, cex=0.3,col=factor(groups))
-  legend(x="topleft", bty = "n", legend=levels(factor(groups)), 
+  legend("bottomright", bty = "n", legend=levels(factor(groups)), 
          cex = 1,  x.intersp=0, xjust=0, yjust=0, text.col=seq_along(levels(factor(groups))))
   return(country.map)
 }
 ```
 
 
-### Prepare data for hierarchical clustering methods
+### Apply Hierarchical Clustering 
 ```{r comment=NA, cache=FALSE, message=FALSE}
 # Create country data frames
 Iraq <- tocluster.data[tocluster.data$country_txt=="Iraq",]
 Pakistan <- tocluster.data[tocluster.data$country_txt=="Pakistan",]
 Afghanistan <- tocluster.data[tocluster.data$country_txt=="Afghanistan",]
 India <- tocluster.data[tocluster.data$country_txt=="India",]
-feature.list <- c("attacktype1", "targtype1", "weaptype1","imonth", "suicide")
-
-```
-
+feature.list <- c("attacktype1", "targtype1", "weaptype1","imonth","suicide")
 
 ### Apply hierarchical clustering methods
-```{r comment=NA, cache=FALSE, message=FALSE}
 #Loop through countries and numbers of k
 country.list <- c("Iraq", "Pakistan", "Afghanistan", "India")
 k.list <- c(3:6)
@@ -129,7 +125,7 @@ for(i in country.list){
   df.hc <- hc.object(eval(parse(text=i)), feature.list)
   print(paste(i))
   assign(paste0(i,".hc"), df.hc)
-  df.plot <- plot(eval(parse(text = paste0(i,".hc"))))
+  df.plot <- plot(as.dendrogram(eval(parse(text = paste0(i,".hc")))), main = i, leaflab = "none")
   dev.print(pdf, paste0(i,".hc",".pdf"))
   assign(paste0(i,".plot"), df.plot)
   carto.data <- cbind(eval(parse(text=i))$longitude, eval(parse(text=i))$latitude)
@@ -144,6 +140,7 @@ for(i in country.list){
 }
 ```
 
+rename the output matrix
 ```{r comment=NA, cache=FALSE, message=FALSE}
 # rename the output matrix
 colnames(Afghanistan.carto) <- c("longitude","latitude","k3","k4","k5","k6")
@@ -171,10 +168,10 @@ colnames(Pakistan.carto) <- c("longitude","latitude","k3","k4","k5","k6")
 colnames(carto.data) <- c("longitude","latitude","k3","k4","k5","k6")
 
 # append groups to the country dataframe(k = 3)
-Afghanistan.group <- cbind(Afghanistan[5:9], Afghanistan.carto$k3)
-India.group <- cbind(India[5:9], India.carto$k3)
-Pakistan.group <- cbind(Pakistan[5:9], Pakistan.carto$k3)
-Iraq.group <- cbind(Iraq[5:9], Iraq.carto$k3)
+Afghanistan.group <- cbind(Afghanistan[feature.list], Afghanistan.carto$k3)
+India.group <- cbind(India[feature.list], India.carto$k3)
+Pakistan.group <- cbind(Pakistan[feature.list], Pakistan.carto$k3)
+Iraq.group <- cbind(Iraq[feature.list], Iraq.carto$k3)
 
 # rename cluster column
 colnames(Afghanistan.group)[ncol(Afghanistan.group)] <- c("group")
@@ -209,9 +206,85 @@ overview.Iraq
 overview.Pakistan
 ```
 
+### Get Top 3 Frequent Features
+Iraq
+```{r comment=NA, cache=FALSE, message=FALSE}
+library(plyr)
 
-## Choose Clusters
-We looked at the dendrogram to decide the possible values of k, and loop through the possible choices of k, and plot it into the maps to find the best number of clusters. We found that k = 3 yields the most significant patterns.
+# Top3 frequent features for Iraq
+top3.Iraq <- data.frame(row.names = 1:3)
+for (f in feature.list){
+  d <-ddply(Iraq.group, .(group), summarize,
+            All=length(group),
+            Variable = paste0(f),
+            frequency = paste(paste(sort(unique(eval(parse(text = f))))[1:3],sort(table(eval(parse(text = f)))[table(eval(parse(text = f)))>0], decreasing = T)[1:3],sep="="),collapse=","))
+  top3.Iraq <- cbind(top3.Iraq, d)
+}
+top3.Iraq
+```
+
+Afghanistan
+```{r comment=NA, cache=FALSE, message=FALSE}
+# Top 3 frequent features for Afghanistan
+top3.Afghanistan <- data.frame(row.names = 1:3)
+for (f in feature.list){
+  d <-ddply(Afghanistan.group, .(group), summarize,
+            All=length(group),
+            Variable = paste0(f),
+            frequency = paste(paste(sort(unique(eval(parse(text = f))))[1:3],sort(table(eval(parse(text = f)))[table(eval(parse(text = f)))>0], decreasing = T)[1:3],sep="="),collapse=","))
+  top3.Afghanistan <- cbind(top3.Afghanistan, d)
+}
+top3.Afghanistan
+```
+
+Pakistan
+```{r comment=NA, cache=FALSE, message=FALSE}
+# Top 3 frequent features for Pakistan
+top3.Pakistan <- data.frame(row.names = 1:3)
+for (f in feature.list){
+  d <-ddply(Pakistan.group, .(group), summarize,
+            All=length(group),
+            Variable = paste0(f),
+            frequency = paste(paste(sort(unique(eval(parse(text = f))))[1:3],sort(table(eval(parse(text = f)))[table(eval(parse(text = f)))>0], decreasing = T)[1:3],sep="="),collapse=","))
+  top3.Pakistan <- cbind(top3.Pakistan, d)
+}
+top3.Pakistan
+```
+
+India
+```{r comment=NA, cache=FALSE, message=FALSE}
+# Top 3 frequent features for India
+
+top3.India <- data.frame(row.names = 1:3)
+for (f in feature.list){
+  d <-ddply(India.group, .(group), summarize,
+            All=length(group),
+            Variable = paste0(f),
+            frequency = paste(paste(sort(unique(eval(parse(text = f))))[1:3],sort(table(eval(parse(text = f)))[table(eval(parse(text = f)))>0], decreasing = T)[1:3],sep="="),collapse=","))
+  top3.India <- cbind(top3.India, d)
+}
+top3.India
+```
+
+Combine 4 countries together
+```{r comment=NA, cache=FALSE, message=FALSE}
+top3.feature <- data.frame()
+top3.feature <- rbind(top3.Iraq, top3.Pakistan, top3.Afghanistan, top3.India)
+
+# Add and rename country columns
+top3.feature <- cbind(top3.feature, rep(country.list, each = 3))
+top3.feature <- top3.feature[c(17, 1:16)]
+colnames(top3.feature)[1] <- "Country"
+```
+
+Take a look at the final output
+```{r comment=NA, cache=FALSE, message=FALSE}
+top3.feature
+```
+
+
+## How We Choose Clusters
+We looked at the dendrogram to decide the possible values of k, and loop through the possible choices of k, and plot it into the maps to find the best number of clusters. Since increasing the number of k doesn't add We found that k = 3 yields the most significant patterns.
 
 
 ## Results
@@ -232,6 +305,7 @@ We looked at the dendrogram to decide the possible values of k, and loop through
 ### Pakistan
 * Geographically
     + Cluster 1 is located in the south of the country
+    
     + Cluster 2 is concentrated on the northeast of the country
 
 * Meaning of the clusters
@@ -241,7 +315,7 @@ We looked at the dendrogram to decide the possible values of k, and loop through
     + In cluster 2, most of the attack type is armed assault, the main      target is military, the main weapon type is firearms, the most   
     frequent month is May, it doesn't use suicide attack
     
-     + In cluster 3, most of the attack type is bombing, the main      
+     + In cluster 3, most of the attack type is bombing, the main     
      target is police, the main weapon type is explosive bomb, the most 
      frequent month is February, it uses suicide attack
 
@@ -250,7 +324,9 @@ We looked at the dendrogram to decide the possible values of k, and loop through
 * Geographically
     + The overall attacks are concentrated on the northeast of the 
     India.
+    
     + Cluster 3 is mostly concentrated in the Odisha and Chattisgarh
+    
     + Cluster 1 is located in Jharkhand and the central Manipur
 
 * Meaning of the clusters
@@ -267,7 +343,9 @@ We looked at the dendrogram to decide the possible values of k, and loop through
 ### Iraq
 * Geographically
     + Most attacks belong to Cluster 2
+    
     + Most attacks are along the road 
+    
     + Most Cluster 3 are distributed along the road to Mosul
 
 * Meaning of the clusters

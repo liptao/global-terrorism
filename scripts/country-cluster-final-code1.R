@@ -81,13 +81,11 @@ Afghanistan.carto <- as.data.frame(Afghanistan.carto)
 India.carto <- as.data.frame(India.carto)
 Pakistan.carto <- as.data.frame(Pakistan.carto)
 Iraq.carto <- as.data.frame(Iraq.carto)
-carto.data <- as.data.frame(carto.data)
 
 colnames(Afghanistan.carto) <- c("longitude","latitude","k3","k4","k5","k6")
 colnames(India.carto) <- c("longitude","latitude","k3","k4","k5","k6")
 colnames(Iraq.carto) <- c("longitude","latitude","k3","k4","k5","k6")
 colnames(Pakistan.carto) <- c("longitude","latitude","k3","k4","k5","k6")
-colnames(carto.data) <- c("longitude","latitude","k3","k4","k5","k6")
 
 # append groups to the country dataframe(k = 3)
 Afghanistan.group <- cbind(Afghanistan[5:9], Afghanistan.carto$k3)
@@ -101,7 +99,8 @@ colnames(India.group)[ncol(India.group)] <- c("group")
 colnames(Pakistan.group)[ncol(Pakistan.group)] <- c("group")
 colnames(Iraq.group)[ncol(Iraq.group)] <- c("group")
 
-# Summary of clusters
+
+# Get the Mode of the countries
 # Create mode function
 Mode <- function(x){
   ux <- unique(x)
@@ -109,49 +108,70 @@ Mode <- function(x){
 }
 
 # Get mode features for each clusters
-overview.Iraq <- aggregate(Iraq.group, list(Iraq.group$group), Mode)
-overview.India <- aggregate(India.group, list(India.group$group), Mode)
-overview.Pakistan <- aggregate(Pakistan.group, list(Pakistan.group$group), Mode)
-overview.Afghanistan <- aggregate(Afghanistan.group, list(Afghanistan.group$group), Mode)
+overview.Iraq <- aggregate(Iraq.group, by = list(Iraq.group$group), Mode)
+overview.India <- aggregate(India.group, by = list(India.group$group), Mode)
+overview.Pakistan <- aggregate(Pakistan.group, by = list(Pakistan.group$group), Mode)
+overview.Afghanistan <- aggregate(Afghanistan.group, by = list(Afghanistan.group$group), Mode)
 
 
+# Top3 frequent features for Iraq
+library(plyr)
+top3.Iraq <- data.frame(row.names = 1:3)
+for (f in feature.list){
+  # print(f)
+  d <-ddply(Iraq.group, .(group), summarize,
+            All=length(group),
+            Variable = paste0(f),
+            frequency = paste(paste(sort(unique(eval(parse(text = f))))[1:3],sort(table(eval(parse(text = f)))[table(eval(parse(text = f)))>0], decreasing = T)[1:3],sep="="),collapse=","))
+  top3.Iraq <- cbind(top3.Iraq, d)
+}
+
+# Top 3 frequent features for Afghanistan
+top3.Afghanistan <- data.frame(row.names = 1:3)
+for (f in feature.list){
+  # print(f)
+  d <-ddply(Afghanistan.group, .(group), summarize,
+            All=length(group),
+            Variable = paste0(f),
+            frequency = paste(paste(sort(unique(eval(parse(text = f))))[1:3],sort(table(eval(parse(text = f)))[table(eval(parse(text = f)))>0], decreasing = T)[1:3],sep="="),collapse=","))
+  top3.Afghanistan <- cbind(top3.Afghanistan, d)
+}
+
+# Top 3 frequent features for Pakistan
+top3.Pakistan <- data.frame(row.names = 1:3)
+for (f in feature.list){
+  # print(f)
+  d <-ddply(Pakistan.group, .(group), summarize,
+            All=length(group),
+            Variable = paste0(f),
+            frequency = paste(paste(sort(unique(eval(parse(text = f))))[1:3],sort(table(eval(parse(text = f)))[table(eval(parse(text = f)))>0], decreasing = T)[1:3],sep="="),collapse=","))
+  top3.Pakistan <- cbind(top3.Pakistan, d)
+}
+
+# Top 3 frequent features for India
+top3.India <- data.frame(row.names = 1:3)
+for (f in feature.list){
+  # print(f)
+  d <-ddply(India.group, .(group), summarize,
+            All=length(group),
+            Variable = paste0(f),
+            frequency = paste(paste(sort(unique(eval(parse(text = f))))[1:3],sort(table(eval(parse(text = f)))[table(eval(parse(text = f)))>0], decreasing = T)[1:3],sep="="),collapse=","))
+  top3.India <- cbind(top3.India, d)
+}
+
+# Combine four countries together
+top3.feature <- data.frame()
+top3.feature <- rbind(top3.Iraq, top3.Pakistan, top3.Afghanistan, top3.India)
+
+# Add and rename country columns
+top3.feature <- cbind(top3.feature, rep(country.list, each = 3))
+top3.feature <- top3.feature[c(21, 1:20)]
+colnames(top3.feature)[1] <- "Country"
 # write cluster results with locations as csv
 write.csv(Afghanistan.carto,"Afghanistan.csv")
 write.csv(India.carto,"India.csv")
 write.csv(Pakistan.carto,"Pakistan.csv")
 write.csv(Iraq.carto,"Iraq.csv")
-
-# use pvclust
-# library(pvclust)
-# result.iraq <- pvclust(Iraq[, 5:9], method.dist="cor", method.hclust="average", nboot=1000)
-# plot(result.iraq)
-# pvrect(result.iraq, alpha = 0.90)
-# 
-# result.pak <- pvclust(Pakistan[, 5:9], method.dist="cor", method.hclust="average", nboot=1000)
-# plot(result.pak)
-# pvrect(result.pak, alpha = 0.90)
-# 
-# result.afg <- pvclust(Afghanistan[, 5:9], method.dist="cor", method.hclust="average", nboot=1000)
-# plot(result.afg)
-# pvrect(result.afg, alpha = 0.90)
-# 
-# result.india <- pvclust(India[, 5:9], method.dist="cor", method.hclust="average", nboot=1000)
-# plot(result.india)
-# pvrect(result.india, alpha = 0.90)
-
-
-# Misc
-# Iraq.hc <- hc.object(Iraq, feature.list)
-# plot(Iraq.hc)
-# Iraq.k5 <- set.groups(Iraq.hc, 5)
-# # 
-# # Iraq.map <- map("world", region = "Iraq", interior=FALSE)
-# # Iraq.map <- map("world",boundary=FALSE,col="black",add=TRUE)
-# # Iraq.map <- points(Iraq$longitude, Iraq$latitude, pch = 19, cex=0.5,col=factor(Iraq.k5))
-# 
-Iraq.map.k5 <- draw.map("Iraq", Iraq.k5)
-
-
 
 
 
