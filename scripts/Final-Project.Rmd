@@ -360,6 +360,7 @@ We looked at the dendrogram to decide the possible values of k, and loop through
     most frequent month is June, it doesn't use suicide attack
 
 
-
-
+## Conclusion
+We explored the patterns of terrorism using clustering algorithms, and
+found generally 3 clusters for 4 countries that have the most numbers of terrorist attacks. We also found significant spatial clustering trends in Pakistan, Iraq and India. We hope the results can be used for anti-terrorism efforts, and help the law enforcement to understand the patterns of the terrorist attacks to better prepare counter-terrorism strategy.
 
