@@ -1,4 +1,4 @@
-# Predicting Attack Type in Global Terrorist Events
+# Investigating attack types in Global Terrorist Events
 
 ## Overview/Synopsis
 Analyses of terrorist groups and incidents have begun to recognize the evolutionary nature of terrorism, as well as its ability to adapt to counter-terrorism tactics. This project is intended to predict the clusters of terrorist attack using attack type, weapon type, target type, suicide dummy, month. The analysis is performed on 4 countries that have the most frequent attacks: Iraq, Afghanistan, Pakistan, India.  
